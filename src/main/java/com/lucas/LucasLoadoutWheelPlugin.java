@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
 import net.runelite.client.input.KeyListener;
+import net.runelite.client.callback.ClientThread;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
+import javax.swing.SwingUtilities;
 
 @Slf4j
 @PluginDescriptor(
@@ -67,10 +69,16 @@ public class LucasLoadoutWheelPlugin extends Plugin implements KeyListener
     private LoadoutWheelOverlay wheelOverlay;
 
     @Inject
+    private LoadoutBankOverlay bankOverlay;
+
+    @Inject
     private ClientToolbar clientToolbar;
 
     @Inject
     private KeyManager keyManager;
+
+    @Inject
+    private ClientThread clientThread;
 
     private final List<Layout> layouts = new ArrayList<>();
     private Layout currentLayout;
@@ -105,6 +113,7 @@ public class LucasLoadoutWheelPlugin extends Plugin implements KeyListener
 
         overlayManager.add(inventoryOverlay);
         overlayManager.add(wheelOverlay);
+        overlayManager.add(bankOverlay);
         keyManager.registerKeyListener(this);
 
         refreshPanel();
@@ -116,6 +125,7 @@ public class LucasLoadoutWheelPlugin extends Plugin implements KeyListener
         keyManager.unregisterKeyListener(this);
         overlayManager.remove(inventoryOverlay);
         overlayManager.remove(wheelOverlay);
+        overlayManager.remove(bankOverlay);
 
         if (navButton != null)
         {
@@ -239,7 +249,7 @@ public class LucasLoadoutWheelPlugin extends Plugin implements KeyListener
         return new ArrayList<>(layouts.subList(0, size));
     }
 
-    public Layout addLayoutFromInventory(String name)
+    public void addLayoutFromInventory(String name)
     {
         String layoutName = name == null ? "" : name.trim();
         if (layoutName.isEmpty())
@@ -247,12 +257,15 @@ public class LucasLoadoutWheelPlugin extends Plugin implements KeyListener
             layoutName = "Layout " + (layouts.size() + 1);
         }
 
-        Layout layout = new Layout(UUID.randomUUID().toString(), layoutName, captureInventory(), null, null);
-        layouts.add(layout);
-        setActiveLayout(layout);
-        persistLayouts();
-        refreshPanel();
-        return layout;
+        String finalLayoutName = layoutName;
+        clientThread.invokeLater(() ->
+        {
+            Layout layout = new Layout(UUID.randomUUID().toString(), finalLayoutName, captureInventory(), null, null);
+            layouts.add(layout);
+            setActiveLayout(layout);
+            persistLayouts();
+            refreshPanel();
+        });
     }
 
     public void updateLayoutFromInventory(Layout layout)
@@ -262,9 +275,12 @@ public class LucasLoadoutWheelPlugin extends Plugin implements KeyListener
             return;
         }
 
-        layout.setItems(captureInventory());
-        persistLayouts();
-        refreshPanel();
+        clientThread.invokeLater(() ->
+        {
+            layout.setItems(captureInventory());
+            persistLayouts();
+            refreshPanel();
+        });
     }
 
     public void renameLayout(Layout layout, String name)
@@ -328,7 +344,7 @@ public class LucasLoadoutWheelPlugin extends Plugin implements KeyListener
     {
         if (panel != null)
         {
-            panel.refreshLayouts(getLayouts(), currentLayout);
+            SwingUtilities.invokeLater(() -> panel.refreshLayouts(getLayouts(), currentLayout));
         }
     }
 

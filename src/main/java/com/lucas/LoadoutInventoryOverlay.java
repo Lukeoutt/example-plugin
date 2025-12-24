@@ -55,6 +55,10 @@ public class LoadoutInventoryOverlay extends Overlay
         }
 
         Widget inventoryWidget = client.getWidget(WidgetInfo.BANK_INVENTORY_ITEMS_CONTAINER);
+        if (inventoryWidget == null)
+        {
+            inventoryWidget = client.getWidget(WidgetInfo.INVENTORY);
+        }
         if (inventoryWidget == null || inventoryWidget.isHidden())
         {
             return null;

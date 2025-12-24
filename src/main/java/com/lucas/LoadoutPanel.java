@@ -22,6 +22,7 @@ public class LoadoutPanel extends PluginPanel
     private final LucasLoadoutConfig config;
     private final JPanel listPanel = new JPanel();
     private final JCheckBox overlayToggle = new JCheckBox("Inventory overlay");
+    private final JCheckBox bankProjectionToggle = new JCheckBox("Bank projection");
     private final JCheckBox wheelToggle = new JCheckBox("Wheel overlay");
 
     public LoadoutPanel(LucasLoadoutWheelPlugin plugin, ConfigManager configManager, LucasLoadoutConfig config)
@@ -45,6 +46,13 @@ public class LoadoutPanel extends PluginPanel
             overlayToggle.isSelected()
         ));
 
+        bankProjectionToggle.setSelected(config.enableBankProjection());
+        bankProjectionToggle.addActionListener(e -> configManager.setConfiguration(
+            LucasLoadoutConfig.GROUP,
+            "enableBankProjection",
+            bankProjectionToggle.isSelected()
+        ));
+
         wheelToggle.setSelected(config.enableWheel());
         wheelToggle.addActionListener(e -> configManager.setConfiguration(
             LucasLoadoutConfig.GROUP,
@@ -54,6 +62,7 @@ public class LoadoutPanel extends PluginPanel
 
         controls.add(captureButton);
         controls.add(overlayToggle);
+        controls.add(bankProjectionToggle);
         controls.add(wheelToggle);
 
         listPanel.setLayout(new GridLayout(0, 1, 0, 6));
@@ -81,6 +90,8 @@ public class LoadoutPanel extends PluginPanel
             }
         }
 
+        listPanel.revalidate();
+        listPanel.repaint();
         revalidate();
         repaint();
     }
@@ -123,6 +134,10 @@ public class LoadoutPanel extends PluginPanel
     private void captureLayout()
     {
         String name = JOptionPane.showInputDialog(this, "Layout name:");
+        if (name == null)
+        {
+            return;
+        }
         plugin.addLayoutFromInventory(name);
     }
 

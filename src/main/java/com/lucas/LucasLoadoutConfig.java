@@ -31,6 +31,16 @@ public interface LucasLoadoutConfig extends Config
     }
 
     @ConfigItem(
+        keyName = "enableBankProjection",
+        name = "Enable bank projection",
+        description = "Show layout markers and preview inside the bank"
+    )
+    default boolean enableBankProjection()
+    {
+        return true;
+    }
+
+    @ConfigItem(
         keyName = "wheelKey",
         name = "Wheel key",
         description = "Hold to open the layout wheel"
