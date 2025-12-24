@@ -1,4 +1,4 @@
-﻿package com.lucas;
+package com.lucas;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

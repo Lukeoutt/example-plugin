@@ -1,11 +1,11 @@
-﻿package com.lucas;
+package com.lucas;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import net.runelite.client.input.KeyListener;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -376,3 +376,4 @@ public class LucasLoadoutWheelPlugin extends Plugin implements KeyListener
         configManager.setConfiguration(LucasLoadoutConfig.GROUP, "layoutsJson", json);
     }
 }
+

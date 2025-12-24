@@ -1,4 +1,4 @@
-﻿package com.lucas;
+package com.lucas;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-﻿package com.lucas;
+package com.lucas;
 
 public class LayoutItem
 {

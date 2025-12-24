@@ -1,4 +1,4 @@
-﻿package com.lucas;
+package com.lucas;
 
 import java.awt.Color;
 import java.awt.Dimension;
